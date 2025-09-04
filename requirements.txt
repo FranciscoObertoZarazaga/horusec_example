@@ -1,0 +1,31 @@
+-e .[all]
+-r requirements-tests.txt
+-r requirements-docs.txt
+pre-commit >=2.17.0,<5.0.0
+# For generating screenshots
+playwright
+
+### Faked vulnerabilities
+
+# === Web / HTTP ===
+requests==2.19.1         # versión antigua con issues conocidos de seguridad
+urllib3==1.25.8          # versiones <1.26.5 tienen problemas conocidos (p.ej. CRLF injection)
+tornado==5.1.0           # versiones antiguas con vulnerabilidades (WebSocket/DoS)
+
+# === Frameworks / Templating ===
+Django==2.2.9            # rama 2.2 con varios parches de seguridad posteriores
+Flask==1.0               # viejo; depende de Werkzeug con issues históricos
+Jinja2==2.11.2           # <2.11.3 con fallos reportados (XSS/sandbox escapes)
+Werkzeug==0.14.1         # versiones antiguas con problemas conocidos
+
+# === Serialización / Parsing ===
+PyYAML==5.3              # <5.4 vulnerable si se usa yaml.load() sin Loader seguro
+lxml==4.6.2              # <4.6.5 con fallos reportados (XXE/DoS en algunos escenarios)
+bleach==3.1.0            # sanitizador HTML con bypasses/XSS en versiones viejas
+
+# === Criptografía / JWT (para ejemplos) ===
+PyJWT==1.7.1             # API antigua propensa a malusos (alg=none/validaciones débiles en proyectos)
+itsdangerous==1.1.0      # versiones antiguas con issues conocidos
+
+# === Imágenes / Otros ===
+Pillow==8.1.0            # múltiples CVEs corregidas en ramas más nuevas
