@@ -1,0 +1,46 @@
+# .github/workflows/horusec.yml
+name: 🛡️ Run Horusec Analysis
+
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  horusec-analysis:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: 📥 Checkout Repository A (current repo)
+      uses: actions/checkout@v3
+
+    - name: 🔐 Setup SSH Deploy Key for Repository B
+      run: |
+        mkdir -p ~/.ssh
+        echo "${{ secrets.HORUSEC_SSH_PRIVATE_KEY }}" > ~/.ssh/id_ed25519
+        chmod 600 ~/.ssh/id_ed25519
+        echo -e "Host github.com\n\tStrictHostKeyChecking no\n" > ~/.ssh/config
+
+    - name: 🔄 Clone Repository B into /horusec
+      run: |
+        GIT_SSH_COMMAND="ssh -i ~/.ssh/id_ed25519" \
+        git clone ${{ secrets.HORUSEC_REPOSITORY_URL }} horusec
+    
+    - name: 📁 Create src directory inside horusec/
+      run: mkdir -p horusec/src
+
+    - name: 📦 Copy contents of Repository A into /src (excluding horusec)
+      run: rsync -av --exclude='horusec/' ./ src/
+
+    - name: 🚚 Move /src into horusec/src
+      run: mv src horusec/src
+
+    - name: 🧪 Run Horusec Analysis using Docker Compose
+      run: |
+        cd horusec
+        echo "🛠️ Building and running Horusec analysis..."
+        docker compose -f docker-compose.horusec.yml up --build --abort-on-container-exit --exit-code-from horusec-cli
+      env:
+        HORUSEC_MAX_CRITICAL_VULNERABILITY: 100
+        HORUSEC_MAX_HIGH_VULNERABILITY: 50
+        HORUSEC_MAX_MEDIUM_VULNERABILITY: 50
+        HORUSEC_MAX_LOW_VULNERABILITY: 300
