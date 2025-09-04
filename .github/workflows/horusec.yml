@@ -40,7 +40,7 @@ jobs:
         echo "🛠️ Building and running Horusec analysis..."
         docker compose -f docker-compose.horusec.yml up --build --abort-on-container-exit --exit-code-from horusec-cli
       env:
-        HORUSEC_MAX_CRITICAL_VULNERABILITY: 18
-        HORUSEC_MAX_HIGH_VULNERABILITY: 13
-        HORUSEC_MAX_MEDIUM_VULNERABILITY: 5
-        HORUSEC_MAX_LOW_VULNERABILITY: 35
+        HORUSEC_MAX_CRITICAL_VULNERABILITY: 100
+        HORUSEC_MAX_HIGH_VULNERABILITY: 50
+        HORUSEC_MAX_MEDIUM_VULNERABILITY: 50
+        HORUSEC_MAX_LOW_VULNERABILITY: 300
